@@ -8,9 +8,9 @@ export default function RootLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       {user ? (
-        <Stack.Screen name="(app)/index" />
+        <Stack.Screen name="(app)" />
       ) : (
-        <Stack.Screen name="(auth)/login" />
+        <Stack.Screen name="(auth)" />
       )}
     </Stack>
   );

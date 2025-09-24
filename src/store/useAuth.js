@@ -11,12 +11,14 @@ export const useAuthStore = create((set) => ({
       set({ loading: true });
       const response = await api.post("/auth/login", { email, password });
       console.log("User data:", response.data);
-      set({ user: response.data });
+      set({ user: response.data.user });
       set({ token: response.data.token, loading: false });
         console.log("response.data.token:", response.data.token);
       return true;
     } catch (error) {
       set({ error: error.response?.data?.message || "Login failed", loading: false });
+      console.error("Login error:", error);
+      return false;
     }
   },
   register: async (email, password) => {
