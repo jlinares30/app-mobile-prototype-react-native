@@ -20,6 +20,9 @@ export default function LoginScreen() {
       console.log("Login failedas");
     }
   };
+  const handleRegister = () => {
+    router.push("./register");
+  };
 
   return (
     <View style={styles.container}>
@@ -40,6 +43,10 @@ export default function LoginScreen() {
       <View style={styles.button}>
         <Button title="Login" onPress={handleLogin} />
       </View>
+
+      <View style={styles.buttonSignup}>
+        <Button title="Sign up" onPress={handleRegister} />
+      </View>
     </View>
   );
 }
@@ -51,7 +58,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#44e42fff',
+    backgroundColor: '#466142ff',
   },
   title: {
     fontSize: 34,
@@ -71,6 +78,12 @@ const styles = StyleSheet.create({
   button: {
     width: '50%',
     marginTop: 10,
+    backgroundColor: '#8FA98Dff',
+  },
+  buttonSignup: {
+    width: '30%',
+    top: 100,
+    backgroundColor: '#8FA98Dff',
   },
 });
 
