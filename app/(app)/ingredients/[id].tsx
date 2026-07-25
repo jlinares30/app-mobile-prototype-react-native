@@ -1,4 +1,4 @@
-import { COLORS, FONTS, SHADOWS, SPACING } from "@/src/constants/theme";
+import { COLORS, FONTS, SHADOWS, SPACING, useThemeColors } from "@/src/constants/theme";
 import { useTranslation } from "@/src/lib/i18n";
 import { Ingredient } from "@/src/types";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,11 +14,13 @@ import {
   View,
 } from "react-native";
 import api from "../../../src/lib/api";
+import Animated, { FadeInDown } from "react-native-reanimated";
 
 export default function IngredientDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { t, language } = useTranslation();
+  const { colors } = useThemeColors();
 
   const [ingredient, setIngredient] = useState<Ingredient | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -45,66 +47,72 @@ export default function IngredientDetail() {
 
   if (!id || loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+      <View style={[styles.center, { backgroundColor: colors.background }]}>
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
 
   if (error || !ingredient) {
     return (
-      <View style={styles.center}>
-        <Text style={styles.error}>{error || (language === 'es' ? 'Ingrediente no encontrado' : 'Ingredient not found')}</Text>
-        <TouchableOpacity style={styles.retryButton} onPress={() => router.back()}>
-          <Text style={styles.retryText}>{language === 'es' ? 'Volver' : 'Go Back'}</Text>
+      <View style={[styles.center, { backgroundColor: colors.background }]}>
+        <Text style={[styles.error, { color: colors.error }]}>{error || (language === 'es' ? 'Ingrediente no encontrado' : 'Ingredient not found')}</Text>
+        <TouchableOpacity style={[styles.retryButton, { backgroundColor: colors.primary }]} onPress={() => router.back()}>
+          <Text style={[styles.retryText, { color: '#ffffff' }]}>{language === 'es' ? 'Volver' : 'Go Back'}</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   const renderMacro = (label: string, value: number = 0, color: string) => (
-    <View style={styles.macroCard}>
+    <View style={[styles.macroCard, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}>
       <Text style={[styles.macroValue, { color }]}>{value}g</Text>
-      <Text style={styles.macroLabel}>{label}</Text>
+      <Text style={[styles.macroLabel, { color: colors.text.secondary }]}>{label}</Text>
     </View>
   );
 
   return (
-    <View style={styles.mainContainer}>
+    <View style={[styles.mainContainer, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={COLORS.text.primary} />
+          <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle} numberOfLines={1}>
+        <Text style={[styles.headerTitle, { color: colors.text.primary }]} numberOfLines={1}>
           {language === 'es' ? 'Detalle del Ingrediente' : 'Ingredient Details'}
         </Text>
         <View style={{ width: 40 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Image Section */}
-        <View style={styles.imageContainer}>
-          <Image
-            source={{ uri: ingredient.image || "https://img.icons8.com/color/480/vegetables.png" }}
-            style={styles.image}
-            resizeMode="contain"
-          />
-        </View>
+        {/* Modern Hero Image Card */}
+        <Animated.View
+          entering={FadeInDown.duration(400).springify()}
+          style={[styles.heroCard, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}
+        >
+          <View style={[styles.glowCircle, { backgroundColor: colors.primary + '18' }]} />
+          <View style={[styles.imageFrame, { borderColor: colors.primary + '40', backgroundColor: colors.background }]}>
+            <Image
+              source={{ uri: ingredient.image || "https://img.icons8.com/color/480/vegetables.png" }}
+              style={styles.heroImage}
+              resizeMode="cover"
+            />
+          </View>
+        </Animated.View>
 
         <View style={styles.headerSection}>
-          <Text style={styles.title}>{ingredient.name}</Text>
+          <Text style={[styles.title, { color: colors.text.primary }]}>{ingredient.name}</Text>
           <View style={styles.badgesRow}>
             {ingredient.category && (
-              <View style={styles.badge}>
-                <Ionicons name="pricetag-outline" size={14} color={COLORS.primary} />
-                <Text style={styles.badgeText}>{ingredient.category}</Text>
+              <View style={[styles.badge, { backgroundColor: colors.primary + '20' }]}>
+                <Ionicons name="pricetag-outline" size={14} color={colors.primary} />
+                <Text style={[styles.badgeText, { color: colors.primary }]}>{ingredient.category}</Text>
               </View>
             )}
             {ingredient.unit && (
-              <View style={[styles.badge, styles.unitBadge]}>
-                <Ionicons name="scale-outline" size={14} color={COLORS.text.secondary} />
-                <Text style={[styles.badgeText, { color: COLORS.text.secondary }]}>{ingredient.unit}</Text>
+              <View style={[styles.badge, styles.unitBadge, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}>
+                <Ionicons name="scale-outline" size={14} color={colors.text.secondary} />
+                <Text style={[styles.badgeText, { color: colors.text.secondary }]}>{ingredient.unit}</Text>
               </View>
             )}
           </View>
@@ -112,16 +120,16 @@ export default function IngredientDetail() {
 
         {/* Nutrition Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
+          <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>
             {language === 'es' ? 'Nutrición (por 100g)' : 'Nutrition (per 100g)'}
           </Text>
 
-          <View style={styles.caloriesCard}>
+          <View style={[styles.caloriesCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <View>
-              <Text style={styles.caloriesLabel}>{language === 'es' ? 'Energía' : 'Energy'}</Text>
-              <Text style={styles.caloriesValue}>{ingredient.calories || 0}</Text>
+              <Text style={[styles.caloriesLabel, { color: colors.text.secondary }]}>{language === 'es' ? 'Energía' : 'Energy'}</Text>
+              <Text style={[styles.caloriesValue, { color: colors.text.primary }]}>{ingredient.calories || 0}</Text>
             </View>
-            <Text style={styles.kcalText}>kcal</Text>
+            <Text style={[styles.kcalText, { color: colors.text.light }]}>kcal</Text>
           </View>
 
           <View style={styles.macrosContainer}>
@@ -135,12 +143,17 @@ export default function IngredientDetail() {
         {/* Tags Section */}
         {ingredient.tags && ingredient.tags.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{language === 'es' ? 'Etiquetas' : 'Tags'}</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>{language === 'es' ? 'Etiquetas' : 'Tags'}</Text>
             <View style={styles.tagsContainer}>
               {ingredient.tags.map((tag, index) => (
-                <View key={index} style={styles.tagChip}>
-                  <Text style={styles.tagText}>#{tag}</Text>
-                </View>
+                <TouchableOpacity
+                  key={index}
+                  activeOpacity={0.7}
+                  style={[styles.tagChip, { backgroundColor: colors.card, borderColor: colors.border }]}
+                  onPress={() => router.push({ pathname: "/ingredients", params: { tag } })}
+                >
+                  <Text style={[styles.tagText, { color: colors.primary, fontWeight: '600' }]}>#{tag}</Text>
+                </TouchableOpacity>
               ))}
             </View>
           </View>
@@ -187,19 +200,38 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: COLORS.background,
   },
-  imageContainer: {
-    width: '100%',
-    height: 220,
-    backgroundColor: '#fff',
+  heroCard: {
+    marginHorizontal: SPACING.m,
+    marginTop: SPACING.m,
+    marginBottom: SPACING.l,
+    height: 210,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    marginBottom: SPACING.m,
+    position: 'relative',
+    overflow: 'hidden',
+    ...SHADOWS.medium,
   },
-  image: {
-    width: '60%',
-    height: '60%',
+  glowCircle: {
+    position: 'absolute',
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+  },
+  imageFrame: {
+    width: 136,
+    height: 136,
+    borderRadius: 68,
+    borderWidth: 3,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...SHADOWS.small,
+  },
+  heroImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 68,
   },
   headerSection: {
     paddingHorizontal: SPACING.l,

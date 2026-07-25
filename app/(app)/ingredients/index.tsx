@@ -4,16 +4,18 @@ import { useOnboarding } from "@/src/hooks/useOnboarding";
 import { Ingredient } from "@/src/types";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
   FlatList,
   RefreshControl,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -42,6 +44,7 @@ const IngredientSkeleton = () => (
 
 export default function IngredientsScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ query?: string; tag?: string; category?: string }>();
   const queryClient = useQueryClient();
   const showOnboarding = useOnboarding('onboarding_swipe_ingredients');
   const { t } = useTranslation();
@@ -49,6 +52,20 @@ export default function IngredientsScreen() {
 
   const [query, setQuery] = useState<string>("");
   const [debouncedQuery, setDebouncedQuery] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (params.tag) {
+      setSelectedTag(params.tag);
+    }
+    if (params.query) {
+      setQuery(params.query);
+    }
+    if (params.category) {
+      setSelectedCategory(params.category);
+    }
+  }, [params.query, params.tag, params.category]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -68,16 +85,48 @@ export default function IngredientsScreen() {
     error,
     refetch
   } = useQuery({
-    queryKey: ['ingredients', debouncedQuery],
+    queryKey: ['ingredients', debouncedQuery, selectedTag],
     queryFn: async () => {
-      const res = await api.get("/ingredients", {
-        params: debouncedQuery.trim() ? { query: debouncedQuery.trim() } : {}
-      });
+      const paramsObj: Record<string, string> = {};
+      if (debouncedQuery.trim()) paramsObj.query = debouncedQuery.trim();
+      if (selectedTag) paramsObj.tag = selectedTag;
+
+      const res = await api.get("/ingredients", { params: paramsObj });
       const data = res.data?.data ?? res.data;
       return Array.isArray(data) ? data : [];
     },
     staleTime: 1000 * 60 * 5 // 5 minutes cache
   });
+
+  // Unique Categories List (Only categories with actual elements)
+  const categories = useMemo(() => {
+    const categorySet = new Set<string>();
+    ingredients.forEach((item: Ingredient) => {
+      if (item.category && item.category.trim()) {
+        categorySet.add(item.category.trim());
+      }
+    });
+    return ["All", ...Array.from(categorySet).sort()];
+  }, [ingredients]);
+
+  // Filter ingredients by category and tag
+  const filteredIngredients = useMemo(() => {
+    return ingredients.filter((item: Ingredient) => {
+      // Category filter
+      if (selectedCategory !== "All") {
+        if (!item.category || item.category.trim().toLowerCase() !== selectedCategory.trim().toLowerCase()) {
+          return false;
+        }
+      }
+      // Tag filter
+      if (selectedTag) {
+        if (!item.tags || !Array.isArray(item.tags)) return false;
+        const hasTag = item.tags.some((t: string) => t.trim().toLowerCase() === selectedTag.trim().toLowerCase());
+        if (!hasTag) return false;
+      }
+      return true;
+    });
+  }, [ingredients, selectedCategory, selectedTag]);
 
   // Fetch Pantry for Check
   const {
@@ -100,7 +149,7 @@ export default function IngredientsScreen() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['shoppingList'] });
+      queryClient.invalidateQueries({ queryKey: ['shopping-list'] });
       Toast.show({
         type: 'success',
         text1: 'Success',
@@ -172,7 +221,62 @@ export default function IngredientsScreen() {
             returnKeyType="search"
             clearButtonMode="while-editing"
           />
+          {query.length > 0 && (
+            <TouchableOpacity onPress={() => setQuery("")} style={{ marginRight: 8 }}>
+              <Ionicons name="close-circle" size={20} color={colors.text.light} />
+            </TouchableOpacity>
+          )}
           {(isFetching) && <ActivityIndicator size="small" color={colors.primary} />}
+        </View>
+
+        {/* Active Tag Filter Badge */}
+        {selectedTag && (
+          <View style={{ paddingHorizontal: SPACING.m, marginBottom: SPACING.s, flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity
+              style={[
+                styles.categoryChip,
+                { backgroundColor: colors.primary + '20', borderColor: colors.primary, flexDirection: 'row', alignItems: 'center', gap: 6 }
+              ]}
+              onPress={() => setSelectedTag(null)}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.categoryText, { color: colors.primary, fontWeight: '700' }]}>#{selectedTag}</Text>
+              <Ionicons name="close-circle" size={16} color={colors.primary} />
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Category Filters Bar */}
+        <View style={{ marginBottom: SPACING.s }}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: SPACING.m, gap: SPACING.s }}
+          >
+            {categories.map((cat) => {
+              const isActive = selectedCategory.toLowerCase() === cat.toLowerCase();
+              return (
+                <TouchableOpacity
+                  key={cat}
+                  onPress={() => setSelectedCategory(cat)}
+                  style={[
+                    styles.categoryChip,
+                    { backgroundColor: colors.card, borderColor: colors.border },
+                    isActive && { backgroundColor: colors.primary, borderColor: colors.primary },
+                  ]}
+                  activeOpacity={0.7}
+                >
+                  <Text style={[
+                    styles.categoryText,
+                    { color: colors.text.primary },
+                    isActive && { color: '#ffffff', fontWeight: '700' }
+                  ]}>
+                    {cat === "All" ? t('common.all') : cat}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
         </View>
 
         {error ? (
@@ -185,7 +289,7 @@ export default function IngredientsScreen() {
           renderSkeletons()
         ) : (
           <FlatList
-            data={ingredients}
+            data={filteredIngredients}
             keyExtractor={(i) => i._id}
             renderItem={renderItem}
             showsVerticalScrollIndicator={false}
@@ -254,6 +358,19 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: FONTS.sizes.body,
     color: COLORS.text.primary,
+  },
+  categoryChip: {
+    paddingVertical: SPACING.s,
+    paddingHorizontal: SPACING.m,
+    borderRadius: SPACING.xl,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.card,
+  },
+  categoryText: {
+    fontSize: FONTS.sizes.small,
+    color: COLORS.text.primary,
+    fontWeight: "600",
   },
   listContainer: {
     padding: SPACING.m,
