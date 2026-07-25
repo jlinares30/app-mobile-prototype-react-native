@@ -78,6 +78,7 @@ const translations = {
             noRecipesFound: "No recipes found for this category.",
             noMyRecipes: "No recipes created yet.",
             noFavorites: "No favorite recipes saved yet.",
+            addAll: "Add All",
             createRecipe: "Create Recipe",
             newRecipeTitle: "New Recipe",
             editRecipeTitle: "Edit Recipe",
@@ -94,6 +95,7 @@ const translations = {
             instructionsSection: "Steps & Instructions",
             addStep: "Add Step",
             stepPlaceholder: "Describe this step...",
+            saveButton: "Save Recipe",
             categories: {
                 All: "All",
                 Breakfast: "Breakfast",
@@ -126,7 +128,7 @@ const translations = {
             addMeal: "Add Meal",
             addDay: "Add Day",
             createButton: "Create",
-            saveButton: "Save Changes",
+            saveButton: "Save",
         },
         shopping: {
             title: "Shopping List",
@@ -233,6 +235,7 @@ const translations = {
             noRecipesFound: "No se encontraron recetas para esta categoría.",
             noMyRecipes: "Aún no has creado recetas.",
             noFavorites: "Aún no tienes recetas favoritas guardadas.",
+            addAll: "Agregar Todo",
             createRecipe: "Crear Receta",
             newRecipeTitle: "Nueva Receta",
             editRecipeTitle: "Editar Receta",
@@ -249,6 +252,7 @@ const translations = {
             instructionsSection: "Pasos e Instrucciones",
             addStep: "Agregar Paso",
             stepPlaceholder: "Describe este paso...",
+            saveButton: "Guardar Receta",
             categories: {
                 All: "Todos",
                 Breakfast: "Desayuno",
@@ -397,6 +401,8 @@ export type TranslationKey =
     | "recipes.instructionsSection"
     | "recipes.addStep"
     | "recipes.stepPlaceholder"
+    | "recipes.saveButton"
+    | "recipes.addAll"
     | "mealplans.title"
     | "mealplans.publicPlans"
     | "mealplans.myPlans"
