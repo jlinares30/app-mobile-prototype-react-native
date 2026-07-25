@@ -114,14 +114,26 @@ export default function SwipeableRow({
         };
     });
 
+    const rBackgroundStyle = useAnimatedStyle(() => {
+        const opacity = interpolate(
+            translateX.value,
+            [0, 15],
+            [0, 1],
+            Extrapolation.CLAMP
+        );
+        return {
+            opacity,
+        };
+    });
+
     return (
         <GestureHandlerRootView style={[styles.container, style]}>
-            <View style={[styles.background, { backgroundColor: backColor }]}>
+            <Animated.View style={[styles.background, { backgroundColor: backColor }, rBackgroundStyle]}>
                 <Animated.View style={[styles.iconContainer, rIconStyle]}>
                     <Ionicons name={iconName} size={30} color="#fff" />
                     <Text style={styles.addText}>{actionLabel}</Text>
                 </Animated.View>
-            </View>
+            </Animated.View>
 
             <GestureDetector gesture={pan}>
                 <Animated.View style={[{ backgroundColor: 'transparent' }, rStyle]}>

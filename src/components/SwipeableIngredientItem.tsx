@@ -2,6 +2,7 @@ import { COLORS, useThemeColors } from "../constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useTranslation } from "@/src/lib/i18n";
 import SwipeableRow from "./SwipeableRow";
 
 export interface Ingredient {
@@ -20,10 +21,16 @@ type Props = {
 
 export default function SwipeableIngredientItem({ item, onPress, onAdd, shouldAnimate }: Props) {
   const { colors } = useThemeColors();
+  const { t } = useTranslation();
 
   return (
-    <SwipeableRow onSwipe={() => onAdd?.(item)} style={styles.container} shouldAnimate={shouldAnimate}>
-      <TouchableOpacity style={[styles.row, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={() => onPress?.()} activeOpacity={0.8}>
+    <SwipeableRow
+      onSwipe={() => onAdd?.(item)}
+      style={styles.container}
+      shouldAnimate={shouldAnimate}
+      actionLabel={t('common.add')}
+    >
+      <TouchableOpacity style={[styles.row, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={() => onPress?.()} activeOpacity={1}>
         <View style={styles.info}>
           <Text style={[styles.name, { color: colors.text.primary }]}>{item.name}</Text>
           <Text style={[styles.meta, { color: colors.text.secondary }]}>
