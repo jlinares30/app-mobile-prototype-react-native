@@ -1,5 +1,5 @@
 import ConfirmModal, { ModalAction } from '@/src/components/ConfirmModal';
-import { COLORS, FONTS, SHADOWS, SPACING } from "@/src/constants/theme";
+import { COLORS, FONTS, SHADOWS, SPACING, useThemeColors } from "@/src/constants/theme";
 import { useTranslation } from "@/src/lib/i18n";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -31,6 +31,7 @@ export default function EditMealPlanScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const router = useRouter();
     const { t, language } = useTranslation();
+    const { colors } = useThemeColors();
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -276,25 +277,25 @@ export default function EditMealPlanScreen() {
     };
 
     if (loading) return (
-        <View style={styles.center}>
-            <ActivityIndicator size="large" color={COLORS.primary} />
+        <View style={[styles.center, { backgroundColor: colors.background }]}>
+            <ActivityIndicator size="large" color={colors.primary} />
         </View>
     );
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.background }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={{ flex: 1 }}
             >
-                <View style={styles.header}>
+                <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
                     <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                        <Ionicons name="arrow-back" size={24} color={COLORS.text.primary} />
+                        <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
                     </TouchableOpacity>
-                    <Text style={styles.headerTitle}>{t('mealplans.editPlanTitle')}</Text>
-                    <TouchableOpacity onPress={() => handleSave()} disabled={updateMutation.isPending} style={styles.saveButton}>
+                    <Text style={[styles.headerTitle, { color: colors.text.primary }]}>{t('mealplans.editPlanTitle')}</Text>
+                    <TouchableOpacity onPress={() => handleSave()} disabled={updateMutation.isPending} style={[styles.saveButton, { backgroundColor: colors.primary }]}>
                         {updateMutation.isPending ? (
-                            <ActivityIndicator size="small" color={COLORS.card} />
+                            <ActivityIndicator size="small" color="#ffffff" />
                         ) : (
                             <Text style={styles.saveButtonText}>{t('mealplans.saveButton')}</Text>
                         )}
@@ -303,120 +304,120 @@ export default function EditMealPlanScreen() {
 
                 <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
                     {/* Image Picker */}
-                    <TouchableOpacity style={styles.imagePicker} onPress={handleImageSelection}>
+                    <TouchableOpacity style={[styles.imagePicker, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={handleImageSelection}>
                         {image ? (
                             <Image source={{ uri: image }} style={styles.imagePreview} />
                         ) : (
                             <View style={styles.imagePlaceholder}>
-                                <Ionicons name="camera" size={40} color={COLORS.text.light} />
-                                <Text style={styles.imagePlaceholderText}>{t('mealplans.coverPhoto')}</Text>
+                                <Ionicons name="camera" size={40} color={colors.text.light} />
+                                <Text style={[styles.imagePlaceholderText, { color: colors.text.light }]}>{t('mealplans.coverPhoto')}</Text>
                             </View>
                         )}
                     </TouchableOpacity>
 
                     {/* Metadata Section */}
-                    <Animated.View entering={FadeInDown.springify()} style={styles.section}>
+                    <Animated.View entering={FadeInDown.springify()} style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}>
                         <View style={styles.inputGroup}>
-                            <Text style={styles.label}>{t('mealplans.planTitleLabel')}</Text>
+                            <Text style={[styles.label, { color: colors.text.primary }]}>{t('mealplans.planTitleLabel')}</Text>
                             <TextInput
-                                style={styles.input}
+                                style={[styles.input, { backgroundColor: colors.background, borderColor: colors.border, color: colors.text.primary }]}
                                 value={title}
                                 onChangeText={setTitle}
                                 placeholder={t('mealplans.planTitlePlaceholder')}
-                                placeholderTextColor={COLORS.text.light}
+                                placeholderTextColor={colors.text.light}
                             />
                         </View>
                         <View style={styles.inputGroup}>
-                            <Text style={styles.label}>{t('mealplans.planDescLabel')}</Text>
+                            <Text style={[styles.label, { color: colors.text.primary }]}>{t('mealplans.planDescLabel')}</Text>
                             <TextInput
-                                style={[styles.input, { height: 80, textAlignVertical: 'top' }]}
+                                style={[styles.input, { height: 80, textAlignVertical: 'top', backgroundColor: colors.background, borderColor: colors.border, color: colors.text.primary }]}
                                 value={description}
                                 onChangeText={setDescription}
                                 placeholder={t('mealplans.planDescPlaceholder')}
-                                placeholderTextColor={COLORS.text.light}
+                                placeholderTextColor={colors.text.light}
                                 multiline
                             />
                         </View>
 
                         {/* Active Switch */}
-                        <View style={styles.switchContainer}>
+                        <View style={[styles.switchContainer, { borderTopColor: colors.border }]}>
                             <View>
-                                <Text style={styles.switchLabel}>{t('mealplans.activePlanLabel')}</Text>
-                                <Text style={styles.switchSubLabel}>{t('mealplans.activePlanSublabel')}</Text>
+                                <Text style={[styles.switchLabel, { color: colors.text.primary }]}>{t('mealplans.activePlanLabel')}</Text>
+                                <Text style={[styles.switchSubLabel, { color: colors.text.secondary }]}>{t('mealplans.activePlanSublabel')}</Text>
                             </View>
                             <Switch
                                 value={isActive}
                                 onValueChange={setIsActive}
-                                trackColor={{ false: COLORS.border, true: COLORS.primary }}
-                                thumbColor={COLORS.card}
+                                trackColor={{ false: colors.border, true: colors.primary }}
+                                thumbColor={colors.card}
                             />
                         </View>
 
                         {/* Public Switch */}
-                        <View style={styles.switchContainer}>
+                        <View style={[styles.switchContainer, { borderTopColor: colors.border }]}>
                             <View>
-                                <Text style={styles.switchLabel}>{t('mealplans.publicPlanLabel')}</Text>
-                                <Text style={styles.switchSubLabel}>{t('mealplans.publicPlanSublabel')}</Text>
+                                <Text style={[styles.switchLabel, { color: colors.text.primary }]}>{t('mealplans.publicPlanLabel')}</Text>
+                                <Text style={[styles.switchSubLabel, { color: colors.text.secondary }]}>{t('mealplans.publicPlanSublabel')}</Text>
                             </View>
                             <Switch
                                 value={isPublic}
                                 onValueChange={setIsPublic}
-                                trackColor={{ false: COLORS.border, true: COLORS.primary }}
-                                thumbColor={COLORS.card}
+                                trackColor={{ false: colors.border, true: colors.primary }}
+                                thumbColor={colors.card}
                             />
                         </View>
                     </Animated.View>
 
                     {/* Days Section */}
-                    <Text style={styles.sectionTitle}>{t('mealplans.daysAndMeals')}</Text>
+                    <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>{t('mealplans.daysAndMeals')}</Text>
                     {days.map((day, dayIndex) => (
                         <Animated.View
                             key={day._id || dayIndex}
                             entering={SlideInRight.delay(dayIndex * 100).springify()}
                             exiting={SlideOutRight}
-                            style={styles.dayCard}
+                            style={[styles.dayCard, { backgroundColor: colors.card, borderColor: colors.border }]}
                         >
-                            <View style={styles.dayHeader}>
+                            <View style={[styles.dayHeader, { borderBottomColor: colors.border }]}>
                                 <View style={styles.dayTitleContainer}>
-                                    <Ionicons name="calendar-outline" size={20} color={COLORS.primary} style={{ marginRight: SPACING.s }} />
+                                    <Ionicons name="calendar-outline" size={20} color={colors.primary} style={{ marginRight: SPACING.s }} />
                                     <TextInput
                                         value={day.day}
                                         onChangeText={(t) => updateDayTitle(t, dayIndex)}
-                                        style={styles.dayTitleInput}
+                                        style={[styles.dayTitleInput, { color: colors.text.primary }]}
                                         placeholder={t('mealplans.dayNamePlaceholder')}
-                                        placeholderTextColor={COLORS.text.light}
+                                        placeholderTextColor={colors.text.light}
                                     />
                                 </View>
                                 <TouchableOpacity onPress={() => removeDay(dayIndex)} style={styles.iconButton}>
-                                    <Ionicons name="trash-outline" size={20} color={COLORS.error} />
+                                    <Ionicons name="trash-outline" size={20} color={colors.error} />
                                 </TouchableOpacity>
                             </View>
 
                             {/* Meals List */}
                             {day.meals.map((meal, mealIndex) => (
-                                <View key={meal._id || mealIndex} style={styles.mealRow}>
+                                <View key={meal._id || mealIndex} style={[styles.mealRow, { backgroundColor: colors.background, borderColor: colors.border }]}>
                                     <View style={styles.mealInfo}>
-                                        <Ionicons name="restaurant-outline" size={16} color={COLORS.text.secondary} style={{ marginRight: SPACING.s }} />
-                                        <Text style={styles.mealRecipe}>
+                                        <Ionicons name="restaurant-outline" size={16} color={colors.text.secondary} style={{ marginRight: SPACING.s }} />
+                                        <Text style={[styles.mealRecipe, { color: colors.text.primary }]}>
                                             {typeof meal.recipe === 'string' ? "Recipe" : meal.recipe.title}
                                         </Text>
                                     </View>
                                     <TouchableOpacity onPress={() => removeMeal(dayIndex, mealIndex)} style={styles.iconButton}>
-                                        <Ionicons name="close-circle" size={20} color={COLORS.text.light} />
+                                        <Ionicons name="close-circle" size={20} color={colors.text.light} />
                                     </TouchableOpacity>
                                 </View>
                             ))}
 
-                            <TouchableOpacity style={styles.addMealButton} onPress={() => openPicker(dayIndex)}>
-                                <Ionicons name="add" size={16} color={COLORS.primary} />
-                                <Text style={styles.addMealText}>{t('mealplans.addMeal')}</Text>
+                            <TouchableOpacity style={[styles.addMealButton, { borderColor: colors.primary + '40', backgroundColor: colors.primary + '10' }]} onPress={() => openPicker(dayIndex)}>
+                                <Ionicons name="add" size={16} color={colors.primary} />
+                                <Text style={[styles.addMealText, { color: colors.primary }]}>{t('mealplans.addMeal')}</Text>
                             </TouchableOpacity>
                         </Animated.View>
                     ))}
 
-                    <TouchableOpacity style={styles.addDayButton} onPress={addDay}>
-                        <Ionicons name="add-circle-outline" size={24} color={COLORS.primary} style={{ marginRight: SPACING.s }} />
-                        <Text style={styles.addDayText}>{t('mealplans.addDay')}</Text>
+                    <TouchableOpacity style={[styles.addDayButton, { borderColor: colors.primary, backgroundColor: colors.card }]} onPress={addDay}>
+                        <Ionicons name="add-circle-outline" size={24} color={colors.primary} style={{ marginRight: SPACING.s }} />
+                        <Text style={[styles.addDayText, { color: colors.primary }]}>{t('mealplans.addDay')}</Text>
                     </TouchableOpacity>
 
                     <View style={{ height: 40 }} />

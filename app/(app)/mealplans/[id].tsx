@@ -1,4 +1,4 @@
-import { COLORS, FONTS, SHADOWS, SPACING } from "@/src/constants/theme";
+import { COLORS, FONTS, SHADOWS, SPACING, useThemeColors } from "@/src/constants/theme";
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -18,6 +18,7 @@ import { MealPlan } from "../../../src/types";
 export default function MealPlanDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { colors } = useThemeColors();
 
   const [mealPlan, setMealPlan] = useState<MealPlan | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -44,10 +45,10 @@ export default function MealPlanDetail() {
 
   if (!id) {
     return (
-      <View style={styles.center}>
-        <Text style={styles.errorText}>ID not provided.</Text>
-        <TouchableOpacity style={styles.button} onPress={() => router.back()}>
-          <Text style={styles.buttonText}>Back</Text>
+      <View style={[styles.center, { backgroundColor: colors.background }]}>
+        <Text style={[styles.errorText, { color: colors.error }]}>ID not provided.</Text>
+        <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={() => router.back()}>
+          <Text style={[styles.buttonText, { color: '#ffffff' }]}>Back</Text>
         </TouchableOpacity>
       </View>
     );
@@ -55,21 +56,21 @@ export default function MealPlanDetail() {
 
   if (loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+      <View style={[styles.center, { backgroundColor: colors.background }]}>
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.center}>
-        <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity style={styles.button} onPress={() => fetchMealPlan(id)}>
-          <Text style={styles.buttonText}>Retry</Text>
+      <View style={[styles.center, { backgroundColor: colors.background }]}>
+        <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
+        <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={() => fetchMealPlan(id)}>
+          <Text style={[styles.buttonText, { color: '#ffffff' }]}>Reintentar</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, { marginTop: SPACING.m, backgroundColor: COLORS.secondary }]} onPress={() => router.back()}>
-          <Text style={styles.buttonText}>Back</Text>
+        <TouchableOpacity style={[styles.button, { marginTop: SPACING.m, backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]} onPress={() => router.back()}>
+          <Text style={[styles.buttonText, { color: colors.text.primary }]}>Volver</Text>
         </TouchableOpacity>
       </View>
     );
@@ -77,10 +78,10 @@ export default function MealPlanDetail() {
 
   if (!mealPlan) {
     return (
-      <View style={styles.center}>
-        <Text style={styles.errorText}>Not found meal plan.</Text>
-        <TouchableOpacity style={styles.button} onPress={() => router.back()}>
-          <Text style={styles.buttonText}>Back</Text>
+      <View style={[styles.center, { backgroundColor: colors.background }]}>
+        <Text style={[styles.errorText, { color: colors.error }]}>Not found meal plan.</Text>
+        <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={() => router.back()}>
+          <Text style={[styles.buttonText, { color: '#ffffff' }]}>Back</Text>
         </TouchableOpacity>
       </View>
     );
@@ -91,10 +92,10 @@ export default function MealPlanDetail() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.background }]} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={COLORS.text.primary} />
+          <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
         </TouchableOpacity>
       </View>
 
@@ -102,57 +103,57 @@ export default function MealPlanDetail() {
         {mealPlan.image ? (
           <Image source={{ uri: mealPlan.image }} style={styles.image} />
         ) : (
-          <View style={styles.placeholderImage}>
-            <Ionicons name="restaurant-outline" size={64} color={COLORS.text.light} />
+          <View style={[styles.placeholderImage, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}>
+            <Ionicons name="restaurant-outline" size={64} color={colors.text.light} />
           </View>
         )}
 
-        <Text style={styles.title}>{mealPlan.title}</Text>
-        {mealPlan.description ? <Text style={styles.description}>{mealPlan.description}</Text> : null}
+        <Text style={[styles.title, { color: colors.text.primary }]}>{mealPlan.title}</Text>
+        {mealPlan.description ? <Text style={[styles.description, { color: colors.text.secondary }]}>{mealPlan.description}</Text> : null}
 
         {mealPlan.days && mealPlan.days.length > 0 ? (
           mealPlan.days.map((day, index) => (
             <Animated.View
               key={day._id}
               entering={FadeInDown.delay(index * 100).springify()}
-              style={styles.daySection}
+              style={[styles.daySection, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}
             >
-              <View style={styles.dayHeader}>
-                <Ionicons name="calendar-outline" size={20} color={COLORS.primary} />
-                <Text style={styles.sectionTitle}>{day.day}</Text>
+              <View style={[styles.dayHeader, { borderBottomColor: colors.border }]}>
+                <Ionicons name="calendar-outline" size={20} color={colors.primary} />
+                <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>{day.day}</Text>
               </View>
 
               {day.meals.map((meal) => (
                 <TouchableOpacity
                   key={meal._id}
-                  style={styles.mealRow}
+                  style={[styles.mealRow, { backgroundColor: colors.background, borderColor: colors.border, borderWidth: 1 }]}
                   activeOpacity={0.8}
                   onPress={() => {
                     const recipeId = typeof meal.recipe === 'string' ? meal.recipe : meal.recipe?._id;
                     if (recipeId) openRecipe(recipeId);
                   }}
                 >
-                  <View style={styles.mealIcon}>
+                  <View style={[styles.mealIcon, { backgroundColor: colors.primary + '20' }]}>
                     <Ionicons
                       name={meal.type.toLowerCase().includes('breakfast') ? 'sunny-outline' : meal.type.toLowerCase().includes('lunch') ? 'restaurant-outline' : 'moon-outline'}
                       size={20}
-                      color={COLORS.primary}
+                      color={colors.primary}
                     />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.mealType}>{meal.type.toUpperCase()}</Text>
-                    <Text style={styles.mealRecipe}>
+                    <Text style={[styles.mealType, { color: colors.primary }]}>{meal.type.toUpperCase()}</Text>
+                    <Text style={[styles.mealRecipe, { color: colors.text.primary }]}>
                       {typeof meal.recipe === 'string' ? "Recipe" : (meal.recipe?.title ?? "Unknown Recipe")}
                     </Text>
                   </View>
-                  <Ionicons name="chevron-forward" size={20} color={COLORS.text.light} />
+                  <Ionicons name="chevron-forward" size={20} color={colors.text.light} />
                 </TouchableOpacity>
               ))}
             </Animated.View>
           ))
         ) : (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No meals in this plan.</Text>
+            <Text style={[styles.emptyText, { color: colors.text.secondary }]}>No meals in this plan.</Text>
           </View>
         )}
       </Animated.View>
