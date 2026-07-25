@@ -1,4 +1,4 @@
-import { COLORS, FONTS, SHADOWS, SPACING } from "@/src/constants/theme";
+import { COLORS, FONTS, SHADOWS, SPACING, useThemeColors } from "@/src/constants/theme";
 import { Ingredient } from "@/src/types";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -25,6 +25,7 @@ export default function PantryAddScreen() {
     const router = useRouter();
     const queryClient = useQueryClient();
     const { t } = useTranslation();
+    const { colors } = useThemeColors();
     const [query, setQuery] = useState("");
     const [debouncedQuery, setDebouncedQuery] = useState("");
 
@@ -106,60 +107,60 @@ export default function PantryAddScreen() {
     const renderItem = ({ item, index }: { item: Ingredient; index: number }) => (
         <Animated.View entering={FadeInDown.delay(index * 50).springify()}>
             <TouchableOpacity
-                style={styles.card}
+                style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}
                 activeOpacity={0.7}
                 onPress={() => addMutation.mutate(item)}
             >
                 {item.image ? (
                     <Image source={{ uri: item.image }} style={styles.itemImage} />
                 ) : (
-                    <View style={styles.placeholderImage}>
-                        <Ionicons name="nutrition-outline" size={24} color={COLORS.text.light} />
+                    <View style={[styles.placeholderImage, { backgroundColor: colors.background }]}>
+                        <Ionicons name="nutrition-outline" size={24} color={colors.text.light} />
                     </View>
                 )}
                 <View style={styles.info}>
-                    <Text style={styles.name}>{item.name}</Text>
-                    <Text style={styles.detail}>{item.unit} • {item.category || 'Uncategorized'}</Text>
+                    <Text style={[styles.name, { color: colors.text.primary }]}>{item.name}</Text>
+                    <Text style={[styles.detail, { color: colors.text.light }]}>{item.unit} • {item.category || 'Uncategorized'}</Text>
                 </View>
                 <View
-                    style={styles.addButton}
+                    style={[styles.addButton, { backgroundColor: colors.primary }]}
                 >
-                    <Ionicons name="add" size={20} color={COLORS.card} />
+                    <Ionicons name="add" size={20} color={colors.card} />
                 </View>
             </TouchableOpacity>
         </Animated.View>
     );
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+            <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Ionicons name="close" size={24} color={COLORS.text.primary} />
+                    <Ionicons name="close" size={24} color={colors.text.primary} />
                 </TouchableOpacity>
-                <Text style={styles.title}>{t('pantry.addItem')}</Text>
+                <Text style={[styles.title, { color: colors.text.primary }]}>{t('pantry.addItem')}</Text>
                 <View style={{ width: 40 }} />
             </View>
 
-            <View style={styles.searchContainer}>
-                <Ionicons name="search" size={20} color={COLORS.text.light} style={styles.searchIcon} />
+            <View style={[styles.searchContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                <Ionicons name="search" size={20} color={colors.text.light} style={styles.searchIcon} />
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, { color: colors.text.primary }]}
                     placeholder={t('pantry.searchPlaceholder')}
                     value={query}
                     onChangeText={setQuery}
                     autoFocus
-                    placeholderTextColor={COLORS.text.light}
+                    placeholderTextColor={colors.text.light}
                 />
                 {query.length > 0 && (
                     <TouchableOpacity onPress={() => setQuery("")}>
-                        <Ionicons name="close-circle" size={20} color={COLORS.text.light} />
+                        <Ionicons name="close-circle" size={20} color={colors.text.light} />
                     </TouchableOpacity>
                 )}
             </View>
 
             {isLoading || (isFetching && debouncedQuery) ? (
                 <View style={styles.center}>
-                    <ActivityIndicator size="large" color={COLORS.primary} />
+                    <ActivityIndicator size="large" color={colors.primary} />
                 </View>
             ) : (
                 <FlatList
@@ -172,7 +173,7 @@ export default function PantryAddScreen() {
                     ListEmptyComponent={
                         !isLoading ? (
                             <View style={styles.center}>
-                                <Text style={styles.emptyText}>{t('recipes.noRecipesFound')}</Text>
+                                <Text style={[styles.emptyText, { color: colors.text.secondary }]}>{t('recipes.noRecipesFound')}</Text>
                             </View>
                         ) : null
                     }

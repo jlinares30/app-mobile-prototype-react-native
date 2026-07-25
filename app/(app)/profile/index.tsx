@@ -1,6 +1,6 @@
 import ConfirmModal, { ModalAction } from '@/src/components/ConfirmModal';
 import Skeleton from "@/src/components/Skeleton";
-import { COLORS, FONTS, SHADOWS, SPACING } from "@/src/constants/theme";
+import { COLORS, FONTS, SHADOWS, SPACING, useThemeColors } from "@/src/constants/theme";
 import { useAuthStore } from '@/src/store/useAuth';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -16,6 +16,7 @@ export default function ProfileScreen() {
     const { edit } = useLocalSearchParams<{ edit?: string }>();
     const { user, updateProfile, loading } = useAuthStore();
     const { t, language } = useTranslation();
+    const { colors } = useThemeColors();
     console.log("user:", user);
     const [name, setName] = useState(user?.name || '');
     const [email, setEmail] = useState(user?.email || '');
@@ -177,7 +178,7 @@ export default function ProfileScreen() {
     }
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.content}>
                     <Animated.View entering={FadeInDown.springify()} style={styles.avatarContainer}>
@@ -192,68 +193,86 @@ export default function ProfileScreen() {
 
                             {!isEditing ? (
                                 <TouchableOpacity
-                                    style={styles.editIconBadge}
+                                    style={[styles.editIconBadge, { backgroundColor: colors.primary }]}
                                     onPress={() => setIsEditing(true)}
                                 >
-                                    <Ionicons name="pencil" size={16} color={COLORS.card} />
+                                    <Ionicons name="pencil" size={16} color="#ffffff" />
                                 </TouchableOpacity>
                             ) : (
                                 <TouchableOpacity
-                                    style={styles.editIconBadge}
+                                    style={[styles.editIconBadge, { backgroundColor: colors.primary }]}
                                     onPress={handleImageSelection}
                                 >
-                                    <Ionicons name="camera" size={16} color={COLORS.card} />
+                                    <Ionicons name="camera" size={16} color="#ffffff" />
                                 </TouchableOpacity>
                             )}
                         </View>
-                        <Text style={styles.userName}>{user?.name}</Text>
-                        <Text style={styles.userEmail}>{user?.email}</Text>
+                        <Text style={[styles.userName, { color: colors.text.primary }]}>{user?.name}</Text>
+                        <Text style={[styles.userEmail, { color: colors.text.secondary }]}>{user?.email}</Text>
                     </Animated.View>
 
-                    <Animated.View entering={FadeInDown.delay(100).springify()} style={styles.form}>
+                    <Animated.View entering={FadeInDown.delay(100).springify()} style={[styles.form, { backgroundColor: colors.card, borderColor: colors.border }]}>
                         <View style={styles.inputGroup}>
-                            <Text style={styles.label}>{t('profile.name')}</Text>
+                            <Text style={[styles.label, { color: colors.text.primary }]}>{t('profile.name')}</Text>
                             <TextInput
-                                style={[styles.input, !isEditing && styles.disabledInput]}
+                                style={[
+                                    styles.input,
+                                    {
+                                        backgroundColor: isEditing ? colors.background : 'transparent',
+                                        borderColor: colors.border,
+                                        borderWidth: isEditing ? 1 : 0,
+                                        color: colors.text.primary,
+                                        paddingHorizontal: isEditing ? SPACING.m : 0
+                                    }
+                                ]}
                                 value={name}
                                 onChangeText={setName}
                                 editable={isEditing}
                                 placeholder={t('profile.name')}
-                                placeholderTextColor={COLORS.text.light}
+                                placeholderTextColor={colors.text.light}
                             />
                         </View>
 
                         <View style={styles.inputGroup}>
-                            <Text style={styles.label}>{t('profile.email')}</Text>
+                            <Text style={[styles.label, { color: colors.text.primary }]}>{t('profile.email')}</Text>
                             <TextInput
-                                style={[styles.input, !isEditing && styles.disabledInput]}
+                                style={[
+                                    styles.input,
+                                    {
+                                        backgroundColor: isEditing ? colors.background : 'transparent',
+                                        borderColor: colors.border,
+                                        borderWidth: isEditing ? 1 : 0,
+                                        color: colors.text.primary,
+                                        paddingHorizontal: isEditing ? SPACING.m : 0
+                                    }
+                                ]}
                                 value={email}
                                 onChangeText={setEmail}
                                 editable={isEditing}
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                                 placeholder={t('profile.email')}
-                                placeholderTextColor={COLORS.text.light}
+                                placeholderTextColor={colors.text.light}
                             />
                         </View>
 
                         {isEditing && (
                             <>
                                 <Animated.View entering={FadeInDown.springify()} style={styles.inputGroup}>
-                                    <Text style={styles.label}>{t('profile.newPassword')}</Text>
+                                    <Text style={[styles.label, { color: colors.text.primary }]}>{t('profile.newPassword')}</Text>
                                     <TextInput
-                                        style={styles.input}
+                                        style={[styles.input, { backgroundColor: colors.background, borderColor: colors.border, color: colors.text.primary }]}
                                         value={password}
                                         onChangeText={setPassword}
                                         secureTextEntry
                                         placeholder="••••••••"
-                                        placeholderTextColor={COLORS.text.light}
+                                        placeholderTextColor={colors.text.light}
                                     />
                                 </Animated.View>
                                 <Animated.View entering={FadeInDown.springify()} style={styles.inputGroup}>
-                                    <Text style={styles.label}>{t('profile.confirmPassword')}</Text>
+                                    <Text style={[styles.label, { color: colors.text.primary }]}>{t('profile.confirmPassword')}</Text>
                                     <TextInput
-                                        style={styles.input}
+                                        style={[styles.input, { backgroundColor: colors.background, borderColor: colors.border, color: colors.text.primary }]}
                                         value={confirmPassword}
                                         onChangeText={setConfirmPassword}
                                         secureTextEntry
