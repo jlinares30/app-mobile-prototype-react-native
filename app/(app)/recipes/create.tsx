@@ -1,6 +1,6 @@
 import ConfirmModal from '@/src/components/ConfirmModal';
 import IngredientSelector from '@/src/components/IngredientSelector';
-import { COLORS, FONTS, SHADOWS, SPACING } from "@/src/constants/theme";
+import { COLORS, FONTS, SHADOWS, SPACING, useThemeColors } from "@/src/constants/theme";
 import api from '@/src/lib/api';
 import { useTranslation } from '@/src/lib/i18n';
 import { Ingredient } from '@/src/types';
@@ -27,6 +27,7 @@ export default function CreateRecipeScreen() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { t, language } = useTranslation();
+  const { colors } = useThemeColors();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -220,77 +221,79 @@ export default function CreateRecipeScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={COLORS.text.primary} />
+          <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('recipes.newRecipeTitle')}</Text>
+        <Text style={[styles.headerTitle, { color: colors.text.primary }]}>{t('recipes.newRecipeTitle')}</Text>
         <View style={{ width: 24 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
         {/* Image Picker */}
-        <TouchableOpacity style={styles.imagePicker} onPress={handleImageSelection}>
+        <TouchableOpacity style={[styles.imagePicker, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={handleImageSelection}>
           {image ? (
             <Image source={{ uri: image }} style={styles.imagePreview} />
           ) : (
             <View style={styles.imagePlaceholder}>
-              <Ionicons name="camera" size={40} color={COLORS.text.light} />
-              <Text style={styles.imagePlaceholderText}>{t('recipes.coverPhoto')}</Text>
+              <Ionicons name="camera" size={40} color={colors.text.light} />
+              <Text style={[styles.imagePlaceholderText, { color: colors.text.light }]}>{t('recipes.coverPhoto')}</Text>
             </View>
           )}
         </TouchableOpacity>
 
         <View style={styles.formGroup}>
-          <Text style={styles.label}>{t('recipes.recipeTitleLabel')}</Text>
+          <Text style={[styles.label, { color: colors.text.primary }]}>{t('recipes.recipeTitleLabel')}</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text.primary }]}
             value={title}
             onChangeText={setTitle}
             placeholder={t('recipes.recipeTitlePlaceholder')}
-            placeholderTextColor={COLORS.text.light}
+            placeholderTextColor={colors.text.light}
           />
         </View>
 
         <View style={styles.formGroup}>
-          <Text style={styles.label}>{t('mealplans.planDescLabel')}</Text>
+          <Text style={[styles.label, { color: colors.text.primary }]}>{t('mealplans.planDescLabel')}</Text>
           <TextInput
-            style={[styles.input, styles.textArea]}
+            style={[styles.input, styles.textArea, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text.primary }]}
             value={description}
             onChangeText={setDescription}
             placeholder={t('mealplans.planDescPlaceholder')}
-            placeholderTextColor={COLORS.text.light}
+            placeholderTextColor={colors.text.light}
             multiline
           />
         </View>
 
         <View style={styles.row}>
           <View style={[styles.formGroup, { flex: 1, marginRight: SPACING.s }]}>
-            <Text style={styles.label}>{t('recipes.prepTimeLabel')} *</Text>
+            <Text style={[styles.label, { color: colors.text.primary }]}>{t('recipes.prepTimeLabel')} *</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text.primary }]}
               value={time}
               onChangeText={setTime}
               placeholder={t('recipes.prepTimePlaceholder')}
-              placeholderTextColor={COLORS.text.light}
+              placeholderTextColor={colors.text.light}
             />
           </View>
           <View style={[styles.formGroup, { flex: 1 }]}>
-            <Text style={styles.label}>{t('recipes.categoryLabel')} *</Text>
+            <Text style={[styles.label, { color: colors.text.primary }]}>{t('recipes.categoryLabel')} *</Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
               {['Breakfast', 'Lunch', 'Dinner', 'Snack'].map((cat) => (
                 <TouchableOpacity
                   key={cat}
                   style={[
                     styles.difficultyChip,
-                    category === cat && styles.difficultyChipActive
+                    { backgroundColor: colors.card, borderColor: colors.border },
+                    category === cat && { backgroundColor: colors.primary, borderColor: colors.primary }
                   ]}
                   onPress={() => setCategory(cat)}
                 >
                   <Text style={[
                     styles.difficultyText,
-                    category === cat && styles.difficultyTextActive
+                    { color: colors.text.secondary },
+                    category === cat && { color: '#ffffff', fontWeight: '700' }
                   ]}>{t(`recipes.categories.${cat}` as any) || cat}</Text>
                 </TouchableOpacity>
               ))}
@@ -299,7 +302,7 @@ export default function CreateRecipeScreen() {
         </View>
 
         <View style={styles.formGroup}>
-          <Text style={styles.label}>{language === 'es' ? 'Dificultad' : 'Difficulty'}</Text>
+          <Text style={[styles.label, { color: colors.text.primary }]}>{language === 'es' ? 'Dificultad' : 'Difficulty'}</Text>
           <View style={styles.difficultyContainer}>
             {['Easy', 'Medium', 'Hard'].map((level) => {
               const levelLabel = language === 'es'
@@ -310,13 +313,15 @@ export default function CreateRecipeScreen() {
                   key={level}
                   style={[
                     styles.difficultyChip,
-                    difficulty === level && styles.difficultyChipActive
+                    { backgroundColor: colors.card, borderColor: colors.border },
+                    difficulty === level && { backgroundColor: colors.primary, borderColor: colors.primary }
                   ]}
                   onPress={() => setDifficulty(level)}
                 >
                   <Text style={[
                     styles.difficultyText,
-                    difficulty === level && styles.difficultyTextActive
+                    { color: colors.text.secondary },
+                    difficulty === level && { color: '#ffffff', fontWeight: '700' }
                   ]}>{levelLabel}</Text>
                 </TouchableOpacity>
               );
@@ -326,15 +331,15 @@ export default function CreateRecipeScreen() {
 
         <View style={styles.formGroup}>
           <View style={styles.rowBetween}>
-            <Text style={styles.label}>{language === 'es' ? 'Visibilidad' : 'Visibility'}</Text>
+            <Text style={[styles.label, { color: colors.text.primary }]}>{language === 'es' ? 'Visibilidad' : 'Visibility'}</Text>
             <Switch
               value={isPublic}
               onValueChange={setIsPublic}
-              trackColor={{ false: COLORS.border, true: COLORS.primary }}
+              trackColor={{ false: colors.border, true: colors.primary }}
               thumbColor="#fff"
             />
           </View>
-          <Text style={{ color: COLORS.text.secondary, fontSize: FONTS.sizes.small }}>
+          <Text style={{ color: colors.text.secondary, fontSize: FONTS.sizes.small }}>
             {isPublic
               ? (language === 'es' ? 'Pública: Todos pueden ver esta receta' : 'Public: Everyone can see this recipe')
               : (language === 'es' ? 'Privada: Solo tú puedes ver esta receta' : 'Private: Only you can see this recipe')}
@@ -343,44 +348,46 @@ export default function CreateRecipeScreen() {
 
         <View style={styles.formGroup}>
           <View style={styles.rowBetween}>
-            <Text style={styles.label}>{t('recipes.ingredientsSection')}</Text>
+            <Text style={[styles.label, { color: colors.text.primary }]}>{t('recipes.ingredientsSection')}</Text>
             <TouchableOpacity onPress={() => setShowIngredientSelector(true)}>
-              <Text style={styles.addText}>+ {t('recipes.addIngredient')}</Text>
+              <Text style={[styles.addText, { color: colors.primary }]}>+ {t('recipes.addIngredient')}</Text>
             </TouchableOpacity>
           </View>
 
           {ingredients.map((item, index) => (
             <View key={item.ingredient._id} style={styles.ingredientRow}>
-              <Text style={[styles.ingredientName, { flex: 2 }]}>{item.ingredient.name}</Text>
+              <Text style={[styles.ingredientName, { flex: 2, color: colors.text.primary }]}>{item.ingredient.name}</Text>
               <TextInput
-                style={[styles.input, styles.smallInput, { flex: 1 }]}
+                style={[styles.input, styles.smallInput, { flex: 1, backgroundColor: colors.card, borderColor: colors.border, color: colors.text.primary }]}
                 placeholder={language === 'es' ? 'Cant.' : 'Qty'}
+                placeholderTextColor={colors.text.light}
                 keyboardType="numeric"
                 value={item.quantity}
                 onChangeText={(text) => updateIngredient(index, 'quantity', text)}
               />
               <TextInput
-                style={[styles.input, styles.smallInput, { flex: 1 }]}
+                style={[styles.input, styles.smallInput, { flex: 1, backgroundColor: colors.card, borderColor: colors.border, color: colors.text.primary }]}
                 placeholder={language === 'es' ? 'Unid.' : 'Unit'}
+                placeholderTextColor={colors.text.light}
                 value={item.unit}
                 onChangeText={(text) => updateIngredient(index, 'unit', text)}
               />
               <TouchableOpacity onPress={() => removeIngredient(index)} style={styles.removeButton}>
-                <Ionicons name="trash-outline" size={20} color={COLORS.error} />
+                <Ionicons name="trash-outline" size={20} color={colors.error} />
               </TouchableOpacity>
             </View>
           ))}
           {ingredients.length === 0 && (
-            <Text style={styles.placeholderText}>{language === 'es' ? 'No se han agregado ingredientes.' : 'No ingredients added yet.'}</Text>
+            <Text style={[styles.placeholderText, { color: colors.text.light }]}>{language === 'es' ? 'No se han agregado ingredientes.' : 'No ingredients added yet.'}</Text>
           )}
         </View>
 
         <View style={styles.formGroup}>
-          <Text style={styles.label}>{language === 'es' ? 'Etiquetas (separadas por comas)' : 'Tags (comma separated)'}</Text>
+          <Text style={[styles.label, { color: colors.text.primary }]}>{language === 'es' ? 'Etiquetas (separadas por comas)' : 'Tags (comma separated)'}</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text.primary }]}
             placeholder={language === 'es' ? 'Ej. Saludable, Italiana, Rápida' : 'e.g. Healthy, Italian, Quick'}
-            placeholderTextColor={COLORS.text.light}
+            placeholderTextColor={colors.text.light}
             onChangeText={text => setTags(text)}
             value={tags}
           />
@@ -388,20 +395,20 @@ export default function CreateRecipeScreen() {
 
         {/* Simplified Steps Input */}
         <View style={styles.formGroup}>
-          <Text style={styles.label}>{t('recipes.instructionsSection')}</Text>
+          <Text style={[styles.label, { color: colors.text.primary }]}>{t('recipes.instructionsSection')}</Text>
           <TextInput
-            style={[styles.input, styles.textArea]}
+            style={[styles.input, styles.textArea, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text.primary }]}
             value={steps}
             onChangeText={setSteps}
             placeholder={t('recipes.stepPlaceholder')}
-            placeholderTextColor={COLORS.text.light}
+            placeholderTextColor={colors.text.light}
             multiline
           />
         </View>
 
         {/* Submit Button */}
         <TouchableOpacity
-          style={[styles.submitButton, createMutation.isPending && styles.disabledButton]}
+          style={[styles.submitButton, { backgroundColor: colors.primary }, createMutation.isPending && styles.disabledButton]}
           onPress={handleSubmit}
           disabled={createMutation.isPending}
         >

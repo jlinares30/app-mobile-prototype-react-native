@@ -114,7 +114,7 @@ export default function MyRecipesScreen() {
     const renderItem = ({ item, index }: { item: Recipe; index: number }) => (
         <Animated.View entering={FadeInDown.delay(index * 100).springify()}>
             <TouchableOpacity
-                style={styles.card}
+                style={[styles.card, { backgroundColor: colors.card }]}
                 activeOpacity={0.9}
                 onPress={() => router.push(`/recipes/${item._id}`)}
             >
@@ -124,21 +124,21 @@ export default function MyRecipesScreen() {
                             <Image source={{ uri: item.image }} style={styles.recipeImage} />
                         )}
                         <View style={[styles.infoContainer, (!item.image) && { marginLeft: 0 }]}>
-                            <Text style={styles.cardTitle}>{item.title}</Text>
+                            <Text style={[styles.cardTitle, { color: colors.text.primary }]}>{item.title}</Text>
                             <View style={styles.metaRow}>
-                                <View style={styles.tag}>
-                                    <Ionicons name="time-outline" size={12} color={COLORS.text.secondary} />
-                                    <Text style={styles.tagText}>{item.time}</Text>
+                                <View style={[styles.tag, { backgroundColor: colors.background }]}>
+                                    <Ionicons name="time-outline" size={12} color={colors.text.secondary} />
+                                    <Text style={[styles.tagText, { color: colors.text.secondary }]}>{item.time}</Text>
                                 </View>
-                                <View style={styles.tag}>
-                                    <Text style={styles.tagText}>{item.category}</Text>
+                                <View style={[styles.tag, { backgroundColor: colors.background }]}>
+                                    <Text style={[styles.tagText, { color: colors.text.secondary }]}>{item.category}</Text>
                                 </View>
                             </View>
                             {/* Tags Preview */}
                             {item.tags && item.tags.length > 0 && (
                                 <View style={styles.tagsRow}>
                                     {normalizeTags(item.tags).slice(0, 2).map((tag, idx) => (
-                                        <Text key={idx} style={styles.tagsPreviewText}>#{tag}</Text>
+                                        <Text key={idx} style={[styles.tagsPreviewText, { color: colors.primary }]}>#{tag}</Text>
                                     ))}
                                 </View>
                             )}
@@ -148,10 +148,10 @@ export default function MyRecipesScreen() {
                                 style={{ padding: 8 }}
                                 onPress={() => handleDelete(item._id)}
                             >
-                                <Ionicons name="trash-outline" size={20} color={COLORS.error} />
+                                <Ionicons name="trash-outline" size={20} color={colors.error} />
                             </TouchableOpacity>
                         )}
-                        <Ionicons name="chevron-forward" size={20} color={COLORS.text.light} />
+                        <Ionicons name="chevron-forward" size={20} color={colors.text.light} />
                     </View>
                 </View>
             </TouchableOpacity>
@@ -162,7 +162,7 @@ export default function MyRecipesScreen() {
         if (isLoading && !isRefreshing && !myRecipes.length && !favorites.length) {
             return (
                 <View style={styles.center}>
-                    <ActivityIndicator size="large" color={COLORS.primary} />
+                    <ActivityIndicator size="large" color={colors.primary} />
                 </View>
             );
         }
@@ -176,11 +176,11 @@ export default function MyRecipesScreen() {
                 renderItem={renderItem}
                 contentContainerStyle={styles.listContainer}
                 showsVerticalScrollIndicator={false}
-                refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />}
+                refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
                 ListEmptyComponent={
                     <View style={styles.emptyContainer}>
-                        <Ionicons name={activeTab === 'my-recipes' ? "restaurant-outline" : "heart-outline"} size={64} color={COLORS.text.light} style={{ marginBottom: SPACING.m }} />
-                        <Text style={styles.emptyText}>
+                        <Ionicons name={activeTab === 'my-recipes' ? "restaurant-outline" : "heart-outline"} size={64} color={colors.text.light} style={{ marginBottom: SPACING.m }} />
+                        <Text style={[styles.emptyText, { color: colors.text.secondary }]}>
                             {activeTab === 'my-recipes'
                                 ? t('recipes.noMyRecipes')
                                 : t('recipes.noFavorites')}
@@ -192,29 +192,29 @@ export default function MyRecipesScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+            <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={24} color={COLORS.text.primary} />
+                    <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>{t('recipes.myCollection')}</Text>
+                <Text style={[styles.headerTitle, { color: colors.text.primary }]}>{t('recipes.myCollection')}</Text>
                 <View style={{ width: 24 }} />
             </View>
 
             <View style={styles.content}>
                 {/* Tabs */}
-                <View style={styles.tabContainer}>
+                <View style={[styles.tabContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
                     <TouchableOpacity
-                        style={[styles.tab, activeTab === 'my-recipes' && styles.activeTab]}
+                        style={[styles.tab, activeTab === 'my-recipes' && { backgroundColor: colors.primary }]}
                         onPress={() => setActiveTab('my-recipes')}
                     >
-                        <Text style={[styles.tabText, activeTab === 'my-recipes' && styles.activeTabText]}>{t('recipes.myRecipes')}</Text>
+                        <Text style={[styles.tabText, { color: colors.text.secondary }, activeTab === 'my-recipes' && { color: '#ffffff', fontWeight: '700' }]}>{t('recipes.myRecipes')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style={[styles.tab, activeTab === 'favorites' && styles.activeTab]}
+                        style={[styles.tab, activeTab === 'favorites' && { backgroundColor: colors.primary }]}
                         onPress={() => setActiveTab('favorites')}
                     >
-                        <Text style={[styles.tabText, activeTab === 'favorites' && styles.activeTabText]}>{t('recipes.favorites')}</Text>
+                        <Text style={[styles.tabText, { color: colors.text.secondary }, activeTab === 'favorites' && { color: '#ffffff', fontWeight: '700' }]}>{t('recipes.favorites')}</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -225,7 +225,7 @@ export default function MyRecipesScreen() {
                 {/* FAB for creating new recipe (only on My Recipes tab) */}
                 {activeTab === 'my-recipes' && (
                     <TouchableOpacity
-                        style={styles.fab}
+                        style={[styles.fab, { backgroundColor: colors.primary }]}
                         onPress={() => router.push("/recipes/create")}
                     >
                         <Ionicons name="add" size={30} color="#fff" />

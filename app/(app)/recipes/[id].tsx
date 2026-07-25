@@ -1,4 +1,4 @@
-import { COLORS, FONTS, SHADOWS, SPACING } from "@/src/constants/theme";
+import { COLORS, FONTS, SHADOWS, SPACING, useThemeColors } from "@/src/constants/theme";
 import api from "@/src/lib/api";
 import { useTranslation } from "@/src/lib/i18n";
 import { formatQuantityAndUnit } from "@/src/lib/units";
@@ -24,6 +24,7 @@ export default function RecipeDetailScreen() {
   const router = useRouter();
   const { t, language } = useTranslation();
   const { measurementSystem } = usePreferencesStore();
+  const { colors } = useThemeColors();
 
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -75,44 +76,44 @@ export default function RecipeDetailScreen() {
 
   if (!id || loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+      <View style={[styles.center, { backgroundColor: colors.background }]}>
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
 
   if (error || !recipe) {
     return (
-      <View style={styles.center}>
-        <Text style={styles.error}>{error || "Recipe not found"}</Text>
-        <TouchableOpacity style={styles.retryButton} onPress={() => router.back()}>
-          <Text style={styles.retryText}>Go Back</Text>
+      <View style={[styles.center, { backgroundColor: colors.background }]}>
+        <Text style={[styles.error, { color: colors.error }]}>{error || "Recipe not found"}</Text>
+        <TouchableOpacity style={[styles.retryButton, { backgroundColor: colors.primary }]} onPress={() => router.back()}>
+          <Text style={[styles.retryText, { color: '#ffffff' }]}>Go Back</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <View style={styles.mainContainer}>
+    <View style={[styles.mainContainer, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={COLORS.text.primary} />
+          <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle} numberOfLines={1}>
+        <Text style={[styles.headerTitle, { color: colors.text.primary }]} numberOfLines={1}>
           {language === 'es' ? 'Detalle de Receta' : 'Recipe Details'}
         </Text>
         <View style={styles.headerRight}>
           {isAuthor && (
             <TouchableOpacity onPress={() => router.push(`/recipes/edit/${recipe._id}`)} style={styles.actionButton}>
-              <Ionicons name="pencil" size={24} color={COLORS.primary} />
+              <Ionicons name="pencil" size={24} color={colors.primary} />
             </TouchableOpacity>
           )}
           <TouchableOpacity onPress={toggleFavorite} style={styles.actionButton}>
             <Ionicons
               name={isFavorite ? "heart" : "heart-outline"}
               size={28}
-              color={isFavorite ? "red" : COLORS.text.primary}
+              color={isFavorite ? "red" : colors.text.primary}
             />
           </TouchableOpacity>
         </View>
@@ -127,8 +128,8 @@ export default function RecipeDetailScreen() {
           />
           {/* Overlay Gradient or Badges */}
           <View style={styles.imageOverlay}>
-            <View style={[styles.badge, styles.categoryBadge]}>
-              <Text style={styles.badgeText}>
+            <View style={[styles.badge, styles.categoryBadge, { backgroundColor: colors.primary }]}>
+              <Text style={[styles.badgeText, { color: '#ffffff' }]}>
                 {t(`recipes.categories.${recipe.category}` as any) || recipe.category || "General"}
               </Text>
             </View>
@@ -137,48 +138,48 @@ export default function RecipeDetailScreen() {
 
         {/* Title & Meta Info */}
         <View style={styles.section}>
-          <Text style={styles.title}>{recipe.title}</Text>
+          <Text style={[styles.title, { color: colors.text.primary }]}>{recipe.title}</Text>
 
-          <View style={styles.metaRow}>
+          <View style={[styles.metaRow, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}>
             <View style={styles.metaItem}>
-              <Ionicons name="time-outline" size={18} color={COLORS.text.secondary} />
-              <Text style={styles.metaText}>{recipe.time}</Text>
+              <Ionicons name="time-outline" size={18} color={colors.text.secondary} />
+              <Text style={[styles.metaText, { color: colors.text.secondary }]}>{recipe.time}</Text>
             </View>
-            <View style={styles.metaDivider} />
+            <View style={[styles.metaDivider, { backgroundColor: colors.border }]} />
             <View style={styles.metaItem}>
-              <Ionicons name="flame-outline" size={18} color={COLORS.text.secondary} />
-              <Text style={styles.metaText}>
+              <Ionicons name="flame-outline" size={18} color={colors.text.secondary} />
+              <Text style={[styles.metaText, { color: colors.text.secondary }]}>
                 {language === 'es'
                   ? (recipe.difficulty === 'Easy' ? 'Fácil' : recipe.difficulty === 'Hard' ? 'Difícil' : 'Medio')
                   : (recipe.difficulty || 'Medium')}
               </Text>
             </View>
-            <View style={styles.metaDivider} />
+            <View style={[styles.metaDivider, { backgroundColor: colors.border }]} />
             <View style={styles.metaItem}>
-              <Ionicons name={recipe.isPublic ? "globe-outline" : "lock-closed-outline"} size={18} color={COLORS.text.secondary} />
-              <Text style={styles.metaText}>
+              <Ionicons name={recipe.isPublic ? "globe-outline" : "lock-closed-outline"} size={18} color={colors.text.secondary} />
+              <Text style={[styles.metaText, { color: colors.text.secondary }]}>
                 {recipe.isPublic ? (language === 'es' ? 'Pública' : 'Public') : (language === 'es' ? 'Privada' : 'Private')}
               </Text>
             </View>
           </View>
 
-          {recipe.description ? <Text style={styles.description}>{recipe.description}</Text> : null}
+          {recipe.description ? <Text style={[styles.description, { color: colors.text.secondary }]}>{recipe.description}</Text> : null}
         </View>
 
         {/* Ingredients */}
         {recipe.ingredients && recipe.ingredients.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('recipes.ingredientsSection')}</Text>
-            <View style={styles.card}>
+            <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>{t('recipes.ingredientsSection')}</Text>
+            <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}>
               {recipe.ingredients.map((ing, idx) => {
                 const formatted = formatQuantityAndUnit(ing.quantity, ing.unit, measurementSystem);
                 return (
-                  <View key={idx} style={[styles.ingredientRow, idx === recipe.ingredients!.length - 1 && { borderBottomWidth: 0 }]}>
-                    <View style={styles.bullet} />
-                    <Text style={styles.ingredientText}>
-                      <Text style={{ fontWeight: '700' }}>{formatted.quantity} {formatted.unit}</Text>
-                      <Text> {language === 'es' ? 'de' : 'of'} </Text>
-                      <Text style={{ color: COLORS.text.primary }}>{typeof ing.ingredient === "object" ? ing.ingredient.name : ing.ingredient}</Text>
+                  <View key={idx} style={[styles.ingredientRow, { borderBottomColor: colors.border }, idx === recipe.ingredients!.length - 1 && { borderBottomWidth: 0 }]}>
+                    <View style={[styles.bullet, { backgroundColor: colors.primary }]} />
+                    <Text style={[styles.ingredientText, { color: colors.text.primary }]}>
+                      <Text style={{ fontWeight: '700', color: colors.text.primary }}>{formatted.quantity} {formatted.unit}</Text>
+                      <Text style={{ color: colors.text.secondary }}> {language === 'es' ? 'de' : 'of'} </Text>
+                      <Text style={{ color: colors.text.primary }}>{typeof ing.ingredient === "object" ? ing.ingredient.name : ing.ingredient}</Text>
                     </Text>
                   </View>
                 );
@@ -190,13 +191,13 @@ export default function RecipeDetailScreen() {
         {/* Steps */}
         {recipe.steps && recipe.steps.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('recipes.instructionsSection')}</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>{t('recipes.instructionsSection')}</Text>
             {recipe.steps?.map((step, idx) => (
               <View key={idx} style={styles.stepRow}>
-                <View style={styles.stepNumberContainer}>
-                  <Text style={styles.stepNumber}>{idx + 1}</Text>
+                <View style={[styles.stepNumberContainer, { backgroundColor: colors.primary }]}>
+                  <Text style={[styles.stepNumber, { color: '#ffffff' }]}>{idx + 1}</Text>
                 </View>
-                <Text style={styles.stepText}>{step}</Text>
+                <Text style={[styles.stepText, { color: colors.text.primary }]}>{step}</Text>
               </View>
             ))}
           </View>
@@ -205,12 +206,17 @@ export default function RecipeDetailScreen() {
         {/* Tags Section */}
         {recipe.tags && recipe.tags.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Tags</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>Tags</Text>
             <View style={styles.tagsContainer}>
               {normalizeTags(recipe.tags).map((tag, index) => (
-                <View key={index} style={styles.tagChip}>
-                  <Text style={styles.tagText}>#{tag}</Text>
-                </View>
+                <TouchableOpacity
+                  key={index}
+                  activeOpacity={0.7}
+                  style={[styles.tagChip, { backgroundColor: colors.card, borderColor: colors.border }]}
+                  onPress={() => router.push({ pathname: "/recipes", params: { tag } })}
+                >
+                  <Text style={[styles.tagText, { color: colors.primary, fontWeight: '600' }]}>#{tag}</Text>
+                </TouchableOpacity>
               ))}
             </View>
           </View>
