@@ -1,4 +1,4 @@
-import { COLORS } from "@/src/constants/theme";
+import { COLORS, useThemeColors } from "@/src/constants/theme";
 import React, { useEffect } from "react";
 import { StyleProp, StyleSheet, ViewStyle } from "react-native";
 import Animated, {
@@ -22,6 +22,7 @@ export default function Skeleton({
     borderRadius = 8,
     style,
 }: SkeletonProps) {
+    const { colors } = useThemeColors();
     const opacity = useSharedValue(0.3);
 
     useEffect(() => {
@@ -47,6 +48,7 @@ export default function Skeleton({
                     width: width as any,
                     height: height as any,
                     borderRadius,
+                    backgroundColor: colors.border,
                 },
                 animatedStyle,
                 style,

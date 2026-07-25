@@ -2,7 +2,7 @@ import { useColorScheme } from 'react-native';
 import { usePreferencesStore } from '../store/usePreferencesStore';
 
 export const LIGHT_COLORS = {
-    primary: '#6366f1', // Indigo 500
+    primary: '#6366f1', // Indigo 500 (Morado marca)
     secondary: '#ec4899', // Pink 500
     accent: '#10b981', // Emerald 500
     warning: '#f59e0b', // Amber 500
@@ -24,7 +24,7 @@ export const LIGHT_COLORS = {
 };
 
 export const DARK_COLORS = {
-    primary: '#818cf8', // Indigo 400
+    primary: '#818cf8', // Indigo 400 (Morado marca)
     secondary: '#f472b6', // Pink 400
     accent: '#34d399', // Emerald 400
     warning: '#fbbf24', // Amber 400
